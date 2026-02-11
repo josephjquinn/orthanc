@@ -125,10 +125,28 @@ export default function About() {
         <section className="mb-12">
           <h2 className="heading-sm text-foreground mb-3 flex items-baseline gap-2">
             <span className="text-foreground/50 font-mono text-sm">8</span>
-            Route algorithm 
+            Route algorithm
           </h2>
+          <p className="prose-copy text-foreground/80 mb-6">
+            After damage is assessed at every location, the app computes a visit order starting from the emergency hub. You can choose one of two algorithms and tune how much to prioritize high-damage sites versus short travel. The <strong className="text-foreground">damage-priority slider</strong> and <strong className="text-foreground">algorithm</strong> can be changed at any time.
+          </p>
+
+          <h3 className="text-foreground font-sans font-bold text-sm uppercase tracking-wider mb-2 mt-6">Greedy</h3>
+          <p className="prose-copy text-foreground/80 mb-3">
+            The greedy algorithm builds the route one stop at a time. From the current location, it scores each unvisited site and picks the one with the highest score. The score combines damage and distance:
+          </p>
+          <div className="border border-border bg-card rounded p-4 font-mono text-sm text-foreground/90 mb-3 overflow-x-auto">
+            <code className="text-xs sm:text-sm">
+              score = (damage_priority × damage/100) − (1 − damage_priority) × normalized_distance
+            </code>
+          </div>
           <p className="prose-copy text-foreground/80 mb-4">
-            You can choose one of two routing algorithms. <strong className="text-foreground">Greedy</strong>: at each step the next site is chosen by a score (damage priority × damage/100 − (1 − damage priority) × normalized distance), so 100% = worst-damage first, 0% = nearest neighbor. <strong className="text-foreground">TSP (OR-Tools)</strong>: finds the route that minimizes damage-weighted travel cost (open route, no return to hub). The damage-priority slider and algorithm can be changed and the route recomputed without re-running damage assessment. 
+            <strong className="text-foreground">Damage priority</strong> is the slider value from 0 to 100%, interpreted as a weight. At <strong className="text-foreground">100%</strong>, the term with distance is zero: the algorithm always goes to the highest-damage site next. At <strong className="text-foreground">0%</strong>, the damage term is zero: it always goes to the nearest unvisited site. In between, the route balances severity and travel cost. Greedy is fast and easy to tune; it does not guarantee a globally optimal route.
+          </p>
+
+          <h3 className="text-foreground font-sans font-bold text-sm uppercase tracking-wider mb-2 mt-6">TSP (OR-Tools)</h3>
+          <p className="prose-copy text-foreground/80 mb-3">
+            The TSP option uses <strong className="text-foreground">Google OR-Tools</strong> to solve for a route that minimizes <strong className="text-foreground">damage-weighted travel cost</strong>. Each segment’s cost is the actual distance multiplied by a factor that penalizes visiting low-damage sites when damage priority is high. The solver finds the visit order that minimizes total cost over the whole route.
           </p>
         </section>
 
