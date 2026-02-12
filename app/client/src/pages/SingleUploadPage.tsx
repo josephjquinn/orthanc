@@ -42,8 +42,11 @@ export default function SingleUploadPage() {
     <div className="flex-1 px-5 sm:px-10 md:px-20 max-w-[1300px] mx-auto w-full pt-[30px] pb-[30px] sm:pt-[60px] sm:pb-[60px]">
       <section className="mb-10">
         <h1 className="font-sans font-extrabold uppercase text-foreground mb-4 text-3xl md:text-4xl tracking-tight">
-          Orthanc
+          Single assessment
         </h1>
+        <p className="font-serif text-foreground/80 max-w-xl text-base leading-relaxed">
+          Upload one pre-disaster and one post-disaster image. We’ll run the damage model and return a score, a segmentation mask, and per-class pixel counts.
+        </p>
       </section>
 
       <section className="mb-12 grid grid-cols-1 md:grid-cols-2 gap-8">

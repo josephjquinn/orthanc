@@ -255,60 +255,6 @@ export default function RoutingPage() {
     }
   };
 
-  const shuffleArray = <T,>(arr: T[]): T[] => {
-    const out = [...arr];
-    for (let i = out.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [out[i], out[j]] = [out[j], out[i]];
-    }
-    return out;
-  };
-
-  const handleRandomSeed = () => {
-    const completeIndices = routingEntries
-      .map((_, i) => i)
-      .filter(
-        (i) =>
-          routingEntries[i].preFile &&
-          routingEntries[i].postFile &&
-          routingEntries[i].lat.trim() !== "" &&
-          routingEntries[i].lng.trim() !== ""
-      );
-    if (completeIndices.length < 2) return;
-    const coords = completeIndices.map((i) => ({
-      lat: routingEntries[i].lat,
-      lng: routingEntries[i].lng,
-    }));
-    const files = completeIndices.map((i) => ({
-      preFile: routingEntries[i].preFile!,
-      postFile: routingEntries[i].postFile!,
-    }));
-    const shuffledCoords = shuffleArray(coords);
-    const shuffledFiles = shuffleArray(files);
-    setRoutingEntries((prev) => {
-      const next = [...prev];
-      completeIndices.forEach((entryIndex, k) => {
-        next[entryIndex] = {
-          ...next[entryIndex],
-          lat: shuffledCoords[k].lat,
-          lng: shuffledCoords[k].lng,
-          preFile: shuffledFiles[k].preFile,
-          postFile: shuffledFiles[k].postFile,
-        };
-      });
-      return next;
-    });
-  };
-
-  const canRandomSeed =
-    routingEntries.filter(
-      (e) =>
-        e.preFile &&
-        e.postFile &&
-        e.lat.trim() !== "" &&
-        e.lng.trim() !== ""
-    ).length >= 2;
-
   return (
     <div className="flex-1 px-5 sm:px-10 md:px-20 max-w-[1300px] mx-auto w-full pt-[30px] pb-[30px] sm:pt-[60px] sm:pb-[60px]">
       {routingStatus !== "done" && (
@@ -328,9 +274,6 @@ export default function RoutingPage() {
             <h2 className="heading-lg text-foreground mb-2">Routing results</h2>
             <p className="prose-copy text-foreground/80">
               Damage scores by location. Click a marker for details.
-              {routingResults.routeOrder != null && routingResults.hub && (
-                <> Route: {routingResults.algorithm === "tsp" ? "TSP (OR-Tools optimal)" : "Greedy (damage vs distance)"}.</>
-              )}
             </p>
             {routingResults.routeOrder != null &&
               (routingResults.total_distance_km != null || routingResults.total_cost_km != null) && (
@@ -381,9 +324,6 @@ export default function RoutingPage() {
 
           <section className="mb-10 border border-border bg-card p-6">
             <h2 className="heading-sm text-foreground mb-2">Route options</h2>
-            <p className="text-sm text-foreground/60 font-serif mb-4">
-              Change algorithm or damage priority, then recompute the visit order (no need to re-run damage assessment).
-            </p>
             <div className="flex flex-col gap-4">
               <div>
                 <label className="block text-sm font-sans font-medium text-foreground mb-1">Algorithm</label>
@@ -392,8 +332,8 @@ export default function RoutingPage() {
                   onChange={(e) => setRoutingAlgorithm(e.target.value as RoutingAlgorithm)}
                   className="border border-border bg-background px-3 py-2 text-foreground font-sans text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                 >
-                  <option value="greedy">Greedy — damage vs distance</option>
-                  <option value="tsp">TSP — OR-Tools optimal</option>
+                  <option value="greedy">Greedy</option>
+                  <option value="tsp">TSP</option>
                 </select>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
@@ -473,18 +413,6 @@ export default function RoutingPage() {
               <Button variant="transparent" showArrow={false} onClick={handleSeedJapan} className="text-xs py-2 px-5">
                 Seed Japan (14 stops)
               </Button>
-              <Button
-                variant="transparent"
-                showArrow={false}
-                onClick={handleRandomSeed}
-                disabled={!canRandomSeed}
-                className="text-xs py-2 px-5"
-              >
-                Random seed
-              </Button>
-              <span className="text-sm text-foreground/60 font-sans">
-                Seed: 7 stops around Denver, 14 around Tokyo. Random seed: shuffle lat/long and image pairs (need 2+ complete locations).
-              </span>
             </div>
             <div className="space-y-6">
               {routingEntries.map((entry) => (
@@ -596,13 +524,13 @@ export default function RoutingPage() {
                 onChange={(e) => setRoutingAlgorithm(e.target.value as RoutingAlgorithm)}
                 className="border border-border bg-background px-3 py-2 text-foreground font-sans text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
               >
-                <option value="greedy">Greedy — damage vs distance (fast, tunable)</option>
-                <option value="tsp">TSP — OR-Tools optimal (best route for chosen priority)</option>
+                <option value="greedy">Greedy</option>
+                <option value="tsp">TSP</option>
               </select>
               <p className="text-xs text-foreground/60 font-serif mt-1">
                 {routingAlgorithm === "greedy"
                   ? "At each step picks the next site by balancing damage and distance."
-                  : "Solves for the route that minimizes damage-weighted travel cost (open route, no return to hub)."}
+                  : "Solves for the route that minimizes damage-weighted travel cost."}
               </p>
             </div>
             <div>
