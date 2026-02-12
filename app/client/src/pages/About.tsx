@@ -146,7 +146,19 @@ export default function About() {
 
           <h3 className="text-foreground font-sans font-bold text-sm uppercase tracking-wider mb-2 mt-6">Traveling Salesman Problem</h3>
           <p className="prose-copy text-foreground/80 mb-3">
-            The TSP option uses <strong className="text-foreground">Google OR-Tools</strong> to solve for a route that minimizes <strong className="text-foreground">damage-weighted travel cost</strong>. Each segment's cost is the actual distance multiplied by a factor that penalizes visiting low-damage sites when damage priority is high. The solver finds the visit order that minimizes total cost over the whole route.
+            The TSP option uses <strong className="text-foreground">Google OR-Tools</strong> to solve for a route that minimizes <strong className="text-foreground">damage-weighted travel cost</strong>. Each arc&apos;s cost is the distance to the destination site reduced when that site has high damage, so the solver tends to visit worse-damage sites earlier. The arc cost formula is:
+          </p>
+          <div className="border border-border bg-card rounded p-4 font-mono text-sm text-foreground/90 mb-3 overflow-x-auto">
+            <code className="text-xs sm:text-sm">
+              arc_cost = distance × (1 − damage_priority × damage/100)
+            </code>
+          </div>
+          <p className="prose-copy text-foreground/80 mb-4">
+            TSP is <strong className="text-foreground">NP-hard</strong>, so we don&apos;t guarantee the true optimum; OR-Tools uses heuristics to find a good route that minimizes total cost in practice.
+          </p>
+
+          <p className="prose-copy text-foreground/80 mb-4">
+            <strong className="text-foreground">Greedy</strong> is faster but it only chooses the next stop and can produce a suboptimal overall route. <strong className="text-foreground">TSP</strong> searches over the full round-trip and often yields a better total cost or visit order than greedy, but it can be significantly slower when there are many sites.
           </p>
         </section>
 
